@@ -351,6 +351,23 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Load relations on the model if not previously loaded.
+     *
+     * @param  array|string  $relations
+     * @return $this
+     */
+    public function lazyLoad($relations)
+    {
+        $query = $this->newQuery()->with(
+            is_string($relations) ? func_get_args() : $relations
+        );
+
+        $query->lazyLoadRelations([$this]);
+
+        return $this;
+    }
+
+    /**
      * Eager load relations on the model.
      *
      * @param  array|string  $relations

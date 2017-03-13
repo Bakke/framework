@@ -56,6 +56,27 @@ class Collection extends BaseCollection implements QueueableCollection
         return $this;
     }
 
+
+    /**
+     * Load a set of relationships onto the collection if not previously loaded.
+     *
+     * @param  mixed  $relations
+     * @return $this
+     */
+    function lazyLoad($relations) {
+        if (count($this->items) > 0) {
+            if (is_string($relations)) {
+                $relations = func_get_args();
+            }
+
+            $query = $this->first()->newQuery()->with($relations);
+
+            $this->items = $query->lazyLoadRelations($this->items);
+        }
+
+        return $this;
+    }
+
     /**
      * Add an item to the collection.
      *

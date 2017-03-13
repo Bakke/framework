@@ -496,6 +496,30 @@ class Builder
     }
 
     /**
+     * Load the relationships for the models if not previously loaded.
+     *
+     * @param  array  $models
+     * @return array
+     */
+    public function lazyLoadRelations(array $models)
+    {
+        $first = $models[0];
+
+        foreach ($this->eagerLoad as $name => $constraints) {
+            // For nested eager loads we'll skip loading them here and they will be set as an
+            // eager load on the query to retrieve the relation so that they will be eager
+            // loaded on that query, because that is where they get hydrated as models.
+            if (strpos($name, '.') === false) {
+                if (!$first->relationLoaded($name)) {
+                    $models = $this->eagerLoadRelation($models, $name, $constraints);
+                }
+            }
+        }
+
+        return $models;
+    }
+
+    /**
      * Eager load the relationships for the models.
      *
      * @param  array  $models
